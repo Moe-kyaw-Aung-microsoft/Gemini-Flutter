@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -2016,6 +2017,21 @@ fun PortfolioHeroSection(
   isDarkTheme: Boolean
 ) {
   val context = LocalContext.current
+  var downloadProgress by remember { mutableStateOf(0f) }
+  var isDownloading by remember { mutableStateOf(false) }
+  var downloadCompleted by remember { mutableStateOf(false) }
+
+  if (isDownloading) {
+    LaunchedEffect(Unit) {
+      for (progressValue in 1..100) {
+        delay(25)
+        downloadProgress = progressValue / 100f
+      }
+      isDownloading = false
+      downloadCompleted = true
+      Toast.makeText(context, "Moe_Kyaw_Aung_Resume.pdf downloaded successfully! (Simulated)", Toast.LENGTH_LONG).show()
+    }
+  }
   
   MkaGlassCard(
     modifier = Modifier
@@ -2198,6 +2214,94 @@ fun PortfolioHeroSection(
           HeroBadge(label = "Security", icon = Icons.Rounded.Shield)
           Spacer(modifier = Modifier.width(6.dp))
           HeroBadge(label = "AI Integration", icon = Icons.Rounded.Psychology)
+        }
+
+        Spacer(modifier = Modifier.height(18.dp))
+
+        Button(
+          onClick = {
+            if (!isDownloading) {
+              if (downloadCompleted) {
+                downloadCompleted = false
+                downloadProgress = 0f
+              } else {
+                isDownloading = true
+              }
+            }
+          },
+          modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .height(48.dp)
+            .testTag("download_resume_button"),
+          colors = ButtonDefaults.buttonColors(
+            containerColor = if (downloadCompleted) {
+              Color(0xFF10B981) // Beautiful success emerald green
+            } else if (isDownloading) {
+              MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+            } else {
+              MaterialTheme.colorScheme.primary
+            },
+            contentColor = if (downloadCompleted) {
+              Color.White
+            } else if (isDownloading) {
+              MaterialTheme.colorScheme.primary
+            } else {
+              MaterialTheme.colorScheme.onPrimary
+            }
+          ),
+          shape = RoundedCornerShape(14.dp),
+          elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+        ) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+          ) {
+            if (isDownloading) {
+              CircularProgressIndicator(
+                progress = downloadProgress,
+                modifier = Modifier
+                  .size(18.dp),
+                color = MaterialTheme.colorScheme.primary,
+                strokeWidth = 2.dp
+              )
+              Spacer(modifier = Modifier.width(10.dp))
+              Text(
+                text = if (language == Language.EN) {
+                  "Downloading (${(downloadProgress * 100).toInt()}%)"
+                } else {
+                  "ဒေါင်းလုဒ်ဆွဲနေသည် (${(downloadProgress * 100).toInt()}%)"
+                },
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold
+              )
+            } else if (downloadCompleted) {
+              Icon(
+                imageVector = Icons.Rounded.VerifiedUser,
+                contentDescription = "Success",
+                modifier = Modifier.size(18.dp),
+                tint = Color.White
+              )
+              Spacer(modifier = Modifier.width(8.dp))
+              Text(
+                text = if (language == Language.EN) "Resume Saved! Download Again" else "CV သိမ်းဆည်းပြီးပါပြီ! ထပ်မံရယူရန်",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+              )
+            } else {
+              Icon(
+                imageVector = Icons.Rounded.Download,
+                contentDescription = "Download",
+                modifier = Modifier.size(18.dp)
+              )
+              Spacer(modifier = Modifier.width(8.dp))
+              Text(
+                text = if (language == Language.EN) "Download Resume (PDF)" else "CV စာရွက် ရယူရန် (PDF)",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold
+              )
+            }
+          }
         }
       }
     }
