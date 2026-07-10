@@ -354,128 +354,8 @@ fun BioTab(
       }
     }
 
-    // Glowing Profile Picture Section (Elegant Dark Rounded-2xl Style)
-    Box(
-      modifier = Modifier
-        .padding(vertical = 12.dp)
-        .size(140.dp),
-      contentAlignment = Alignment.Center
-    ) {
-      // Glowing background rings with matching RoundedCornerShape
-      val infiniteTransition = rememberInfiniteTransition(label = "Glow")
-      val scale1 by infiniteTransition.animateFloat(
-        initialValue = 1.0f,
-        targetValue = 1.15f,
-        animationSpec = infiniteRepeatable(
-          animation = twistyTween(1800),
-          repeatMode = RepeatMode.Reverse
-        ),
-        label = "Ring1"
-      )
-      val scale2 by infiniteTransition.animateFloat(
-        initialValue = 1.0f,
-        targetValue = 1.3f,
-        animationSpec = infiniteRepeatable(
-          animation = twistyTween(2400),
-          repeatMode = RepeatMode.Reverse
-        ),
-        label = "Ring2"
-      )
-
-      Box(
-        modifier = Modifier
-          .fillMaxSize(0.9f)
-          .scale(scale2)
-          .clip(RoundedCornerShape(28.dp))
-          .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f))
-      )
-      Box(
-        modifier = Modifier
-          .fillMaxSize(0.9f)
-          .scale(scale1)
-          .clip(RoundedCornerShape(24.dp))
-          .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
-      )
-
-      // Main Profile Pic in Elegant Rounded Frame
-      Box(
-        modifier = Modifier
-          .size(110.dp)
-          .shadow(8.dp, RoundedCornerShape(20.dp))
-          .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
-          .clip(RoundedCornerShape(20.dp))
-      ) {
-        AsyncImage(
-          model = ImageRequest.Builder(context)
-            .data("https://res.cloudinary.com/dye5qpwii/image/upload/v1778527878/IMG_20260430_053105_uef0yr.png")
-            .crossfade(true)
-            .build(),
-          contentDescription = "Moe Kyaw Aung Profile",
-          modifier = Modifier.fillMaxSize()
-        )
-      }
-
-      // Active status dot (Emerald pulse style)
-      Box(
-        modifier = Modifier
-          .align(Alignment.BottomEnd)
-          .offset(x = (-12).dp, y = (-4).dp)
-          .size(20.dp)
-          .background(Color(0xFF34D399), CircleShape) // Emerald green
-          .border(3.dp, MaterialTheme.colorScheme.background, CircleShape)
-      )
-    }
-
-    // Name & Title
-    Text(
-      text = if (language == Language.EN) "Moe Kyaw Aung" else "မိုးကျော်အောင်",
-      fontSize = 28.sp,
-      fontWeight = FontWeight.ExtraBold,
-      color = MaterialTheme.colorScheme.onBackground,
-      textAlign = TextAlign.Center,
-      modifier = Modifier.padding(top = 8.dp)
-    )
-
-    // Animated Typing Subtitle Loop
-    TypingSubtitle(language)
-
-    // Locations & Info Chip row
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      modifier = Modifier.padding(vertical = 12.dp)
-    ) {
-      Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-        verticalAlignment = Alignment.CenterVertically
-      ) {
-        Icon(
-          Icons.Rounded.LocationOn,
-          contentDescription = "Location",
-          tint = MaterialTheme.colorScheme.error,
-          modifier = Modifier.size(16.dp)
-        )
-        Text(
-          text = if (language == Language.EN) {
-            "Tachileik, Myanmar 🇲🇲  ↔  Bangkok, Thailand 🇹🇭"
-          } else {
-            "တာချီလိတ်၊ မြန်မာ 🇲🇲  ↔  ဘန်ကောက်၊ ထိုင်း 🇹🇭"
-          },
-          fontSize = 13.sp,
-          fontWeight = FontWeight.Medium,
-          color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-        )
-      }
-
-      Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(top = 4.dp)
-      ) {
-        InfoMiniChip(label = "Burmese 🇲🇲", icon = Icons.Rounded.Translate)
-        InfoMiniChip(label = "English 🌐", icon = Icons.Rounded.Language)
-        InfoMiniChip(label = "Kotlin ☕", icon = Icons.Rounded.Code)
-      }
-    }
+    // Interactive Professional Hero Section
+    PortfolioHeroSection(language, isDarkTheme)
 
     // Stats Grid Layout
     Row(
@@ -2098,6 +1978,229 @@ fun InfoMiniChip(label: String, icon: ImageVector) {
   ) {
     Icon(icon, contentDescription = label, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.primary)
     Text(label, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f))
+  }
+}
+
+@Composable
+fun HeroBadge(label: String, icon: ImageVector) {
+  Box(
+    modifier = Modifier
+      .clip(RoundedCornerShape(8.dp))
+      .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
+      .border(0.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), RoundedCornerShape(8.dp))
+      .padding(horizontal = 8.dp, vertical = 4.dp)
+  ) {
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+      Icon(
+        imageVector = icon,
+        contentDescription = label,
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.size(12.dp)
+      )
+      Text(
+        text = label,
+        fontSize = 10.sp,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary
+      )
+    }
+  }
+}
+
+@Composable
+fun PortfolioHeroSection(
+  language: Language,
+  isDarkTheme: Boolean
+) {
+  val context = LocalContext.current
+  
+  MkaGlassCard(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(bottom = 16.dp),
+    borderAccent = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+    shadowElevation = 6.dp
+  ) {
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .drawBehind {
+          val color1 = if (isDarkTheme) Color(0x1F3B82F6) else Color(0x0F3B82F6)
+          val color2 = if (isDarkTheme) Color(0x1F10B981) else Color(0x0F10B981)
+          drawCircle(
+            brush = Brush.radialGradient(
+              colors = listOf(color1, Color.Transparent),
+              center = Offset(size.width * 0.9f, size.height * 0.2f),
+              radius = size.width * 0.5f
+            )
+          )
+          drawCircle(
+            brush = Brush.radialGradient(
+              colors = listOf(color2, Color.Transparent),
+              center = Offset(size.width * 0.1f, size.height * 0.8f),
+              radius = size.width * 0.6f
+            )
+          )
+        }
+        .padding(20.dp)
+    ) {
+      Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        Box(
+          modifier = Modifier
+            .padding(vertical = 12.dp)
+            .size(130.dp),
+          contentAlignment = Alignment.Center
+        ) {
+          val infiniteTransition = rememberInfiniteTransition(label = "HeroGlow")
+          val scale1 by infiniteTransition.animateFloat(
+            initialValue = 1.0f,
+            targetValue = 1.15f,
+            animationSpec = infiniteRepeatable(
+              animation = tween(2000, easing = FastOutSlowInEasing),
+              repeatMode = RepeatMode.Reverse
+            ),
+            label = "HeroRing1"
+          )
+          val scale2 by infiniteTransition.animateFloat(
+            initialValue = 1.0f,
+            targetValue = 1.25f,
+            animationSpec = infiniteRepeatable(
+              animation = tween(2600, easing = FastOutSlowInEasing),
+              repeatMode = RepeatMode.Reverse
+            ),
+            label = "HeroRing2"
+          )
+
+          Box(
+            modifier = Modifier
+              .fillMaxSize(0.9f)
+              .scale(scale2)
+              .clip(RoundedCornerShape(26.dp))
+              .background(MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f))
+          )
+          Box(
+            modifier = Modifier
+              .fillMaxSize(0.9f)
+              .scale(scale1)
+              .clip(RoundedCornerShape(22.dp))
+              .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f))
+          )
+
+          Box(
+            modifier = Modifier
+              .size(100.dp)
+              .shadow(6.dp, RoundedCornerShape(20.dp))
+              .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp))
+              .clip(RoundedCornerShape(20.dp))
+          ) {
+            AsyncImage(
+              model = ImageRequest.Builder(context)
+                .data("https://res.cloudinary.com/dye5qpwii/image/upload/v1778527878/IMG_20260430_053105_uef0yr.png")
+                .crossfade(true)
+                .build(),
+              contentDescription = "Moe Kyaw Aung Profile",
+              modifier = Modifier.fillMaxSize()
+            )
+          }
+
+          Box(
+            modifier = Modifier
+              .align(Alignment.BottomEnd)
+              .offset(x = (-10).dp, y = (-4).dp)
+              .size(18.dp)
+              .background(Color(0xFF10B981), CircleShape)
+              .border(2.5.dp, MaterialTheme.colorScheme.background, CircleShape)
+          )
+        }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+          text = if (language == Language.EN) "Moe Kyaw Aung" else "မိုးကျော်အောင်",
+          fontSize = 28.sp,
+          fontWeight = FontWeight.ExtraBold,
+          color = MaterialTheme.colorScheme.onSurface,
+          textAlign = TextAlign.Center
+        )
+
+        TypingSubtitle(language)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(4.dp),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          Icon(
+            Icons.Rounded.LocationOn,
+            contentDescription = "Location",
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(14.dp)
+          )
+          Text(
+            text = if (language == Language.EN) {
+              "Tachileik, Myanmar 🇲🇲  ↔  Bangkok, Thailand 🇹🇭"
+            } else {
+              "တာချီလိတ်၊ မြန်မာ 🇲🇲  ↔  ဘန်ကောက်၊ ထိုင်း 🇹🇭"
+            },
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+          )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+          text = if (language == Language.EN) "SENIOR ANDROID DEVELOPER" else "SENIOR ANDROID DEVELOPER အကျဉ်းချုပ်",
+          fontSize = 10.sp,
+          fontWeight = FontWeight.ExtraBold,
+          color = MaterialTheme.colorScheme.primary,
+          letterSpacing = 1.5.sp,
+          modifier = Modifier.padding(bottom = 6.dp)
+        )
+
+        Text(
+          text = if (language == Language.EN) {
+            "Senior Android Developer specializing in high-fidelity mobile experiences, secure offline-first architectures, and modern Jetpack Compose. Crafting performant Kotlin applications with strict adherence to Clean Architecture principles, secure cryptography, and Gemini AI integrations."
+          } else {
+            "ခေတ်မီဆန်းသစ်သော Jetpack Compose၊ လုံခြုံစိတ်ချရသော offline-first ဗိသုကာများနှင့် စွမ်းဆောင်ရည်မြင့်မားသော Kotlin အက်ပ်လီကေးရှင်းများကို ဖန်တီးတည်ဆောက်ရာတွင် အထူးပြုသည့် Senior Android Developer တစ်ဦးဖြစ်ပါသည်။ Clean Architecture၊ ဒေတာလုံခြုံရေးဆိုင်ရာ ကုဒ်ဝှက်စနစ်များနှင့် Gemini AI ချိတ်ဆက်မှုများကို စနစ်တကျကျွမ်းကျင်စွာ အသုံးပြုနိုင်ပါသည်။"
+          },
+          fontSize = 13.sp,
+          textAlign = TextAlign.Center,
+          color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+          lineHeight = 19.sp,
+          modifier = Modifier.padding(horizontal = 8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(vertical = 4.dp),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          HeroBadge(label = "Jetpack Compose", icon = Icons.Rounded.Smartphone)
+          Spacer(modifier = Modifier.width(6.dp))
+          HeroBadge(label = "Kotlin & Coroutines", icon = Icons.Rounded.Code)
+          Spacer(modifier = Modifier.width(6.dp))
+          HeroBadge(label = "Clean Architecture", icon = Icons.Rounded.VerifiedUser)
+          Spacer(modifier = Modifier.width(6.dp))
+          HeroBadge(label = "Security", icon = Icons.Rounded.Shield)
+          Spacer(modifier = Modifier.width(6.dp))
+          HeroBadge(label = "AI Integration", icon = Icons.Rounded.Psychology)
+        }
+      }
+    }
   }
 }
 
