@@ -1,0 +1,6 @@
+{
+  "name": "MKA Portfolio",
+  "description": "Moe Kyaw Aung (MKA) - Senior Android Developer Portfolio App with templates, credentials, projects, and contact info.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
